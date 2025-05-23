@@ -1,3 +1,11 @@
+name: zeitsteuerung
+
+on:
+  schedule:
+    # Läuft alle 4 Stunden um :00 Uhr UTC
+    - cron: "0 */4 * * *"
+  workflow_dispatch: # Manuelle Auslösung über GitHub UI
+
 jobs:
   crawl:
     runs-on: ubuntu-22.04  # Wichtig: Ubuntu 22.04 verwenden, da Playwright auf 24.04 Paketprobleme hat!
