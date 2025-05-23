@@ -1,18 +1,20 @@
 name: zeitsteuerung
 
 on:
+  # Zeitgesteuerter Start: alle 4 Stunden um :00 Uhr UTC
   schedule:
-    # Läuft alle 4 Stunden um :00 Uhr UTC
     - cron: "0 */4 * * *"
-  workflow_dispatch: # Manuelle Auslösung über GitHub UI
+  # Manueller Start über GitHub UI möglich
+  workflow_dispatch:
 
 jobs:
   crawl:
-    runs-on: ubuntu-22.04  # Wichtig: Ubuntu 22.04 verwenden, da Playwright auf 24.04 Paketprobleme hat!
+    # Wichtig: Ubuntu 22.04 verwenden, da Playwright auf Ubuntu 24.04 Paketprobleme hat!
+    runs-on: ubuntu-22.04
     timeout-minutes: 90 # Erhöhtes Timeout für längere Crawls mit Playwright
 
     steps:
-      # 1. Repository-Code herunterladen
+      # 1. Repository-Code auschecken
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -31,16 +33,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # 4. Installiere benötigte Pakete (mit Scrapy-Playwright)
+      # 4. Python-Abhängigkeiten installieren (inkl. Scrapy & Playwright)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           # Playwright-Browser installieren (erforderlich für scrapy-playwright)
           playwright install chromium
-          # Playwright installiert die System-Abhängigkeiten für Ubuntu 22.04 automatisch korrekt
+          # System-Abhängigkeiten werden unter Ubuntu 22.04 automatisch korrekt installiert
 
-      # 5. Datenverzeichnis erstellen
+      # 5. Daten- und Screenshot-Verzeichnisse anlegen
       - name: Create directories
         run: |
           mkdir -p data
@@ -48,6 +50,7 @@ jobs:
           echo "Directory structure:" && ls -la
 
       # 6. Scrapy Spider ausführen
+      # Hinweis: NICHT in den crawler-Ordner wechseln! Scrapy muss im Projekt-Root laufen, wo scrapy.cfg liegt.
       - name: Run scrapy spider
         env:
           OUTPUT_CSV: data/results.csv
@@ -55,10 +58,9 @@ jobs:
           SCRAPY_SETTINGS_MODULE: crawler.settings
         run: |
           echo "Starting Scrapy spider with Playwright..."
-          cd crawler
-          scrapy crawl webspider -o ../data/results.csv
+          scrapy crawl webspider -o data/results.csv
           echo "Crawling completed. Results:"
-          [ -f ../data/results.csv ] && wc -l ../data/results.csv || echo "No results file found"
+          [ -f data/results.csv ] && wc -l data/results.csv || echo "No results file found"
 
       # 7. Screenshots als Artefakt speichern (optional)
       - name: Upload screenshots
