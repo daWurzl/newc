@@ -1,14 +1,6 @@
-name: zeitsteuerung
-
-on:
-  schedule:
-    # Läuft alle 4 Stunden um :00 Uhr UTC
-    - cron: "0 */4 * * *"
-  workflow_dispatch: # Manuelle Auslösung über GitHub UI
-
 jobs:
   crawl:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Wichtig: Ubuntu 22.04 verwenden, da Playwright auf 24.04 Paketprobleme hat!
     timeout-minutes: 90 # Erhöhtes Timeout für längere Crawls mit Playwright
 
     steps:
@@ -38,8 +30,7 @@ jobs:
           pip install -r requirements.txt
           # Playwright-Browser installieren (erforderlich für scrapy-playwright)
           playwright install chromium
-          # System-Abhängigkeiten für Playwright installieren
-          playwright install-deps
+          # Playwright installiert die System-Abhängigkeiten für Ubuntu 22.04 automatisch korrekt
 
       # 5. Datenverzeichnis erstellen
       - name: Create directories
@@ -78,4 +69,3 @@ jobs:
           path: |
             data/results.csv
           if-no-files-found: error
-
