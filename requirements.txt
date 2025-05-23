@@ -1,0 +1,58 @@
+# ---------------------------------------------
+# Scrapy Framework für Web-Scraping
+# Leistungsstarkes, asynchrones Web-Scraping-Framework
+scrapy==2.11.0
+
+# ---------------------------------------------
+# Scrapy-Playwright Integration
+# Ermöglicht JavaScript-Rendering und Browser-Automatisierung in Scrapy
+scrapy-playwright==0.0.36
+
+# ---------------------------------------------
+# Headless-Browser-Steuerung für JavaScript-lastige Seiten
+# Playwright kann Webseiten wie ein echter Browser rendern,
+# Formulare ausfüllen, Klicks simulieren und Screenshots/Videos machen.
+# Unterstützt Headless-Modus für schnelle, ressourcensparende Ausführung.
+playwright==1.42.0
+
+# ---------------------------------------------
+# Asynchrone HTTP-Client/Server-Funktionalität
+# Für parallele, schnelle Webanfragen ohne Blockierung des Programms
+# UVLoop: Schnellere asyncio Event-Loop (ersetzt die Standardimplementierung)
+aiohttp==3.9.3
+uvloop==0.19.0
+
+# ---------------------------------------------
+# Web-Scraping (automatisches Extrahieren von Daten aus Webseiten)
+# und HTML-Parsing (Umwandlung von HTML in eine strukturierte Form)
+beautifulsoup4==4.12.3
+
+# ---------------------------------------------
+# Systemmonitoring & Ressourcenanalyse
+# psutil: Überwacht RAM-, CPU- und Prozessauslastung in Echtzeit
+psutil==5.9.5
+
+# ---------------------------------------------
+# Datenvalidierung und Konfigurationsmanagement
+# Pydantic: Für typsichere Einstellungen und .env-Integration
+pydantic==2.7.0
+
+# ---------------------------------------------
+# .env-Dateien einfach laden und Umgebungsvariablen verwalten
+# python-dotenv: Liest Konfigurationswerte aus .env-Dateien ein
+python-dotenv==1.0.1
+
+# ---------------------------------------------
+# Twisted Reactor für asyncio-Kompatibilität
+# Erforderlich für Scrapy-Playwright Integration
+twisted[tls]==23.10.0
+
+# ---------------------------------------------
+# Zusätzliche Scrapy-Extensions
+# itemadapter: Einheitliche API für Scrapy Items
+itemadapter==0.8.0
+
+# ---------------------------------------------
+# Logging und Debugging
+# loguru: Erweiterte Logging-Funktionalität
+loguru==0.7.2
