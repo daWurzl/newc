@@ -1,1 +1,81 @@
+name: zeitsteuerung
+
+on:
+  schedule:
+    # Läuft alle 4 Stunden um :00 Uhr UTC
+    - cron: "0 */4 * * *"
+  workflow_dispatch: # Manuelle Auslösung über GitHub UI
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90 # Erhöhtes Timeout für längere Crawls mit Playwright
+
+    steps:
+      # 1. Repository-Code herunterladen
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Python 3.11 einrichten
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Cache für Python-Pakete einrichten (Performance-Optimierung)
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 4. Installiere benötigte Pakete (mit Scrapy-Playwright)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Playwright-Browser installieren (erforderlich für scrapy-playwright)
+          playwright install chromium
+          # System-Abhängigkeiten für Playwright installieren
+          playwright install-deps
+
+      # 5. Datenverzeichnis erstellen
+      - name: Create directories
+        run: |
+          mkdir -p data
+          mkdir -p screenshots
+          echo "Directory structure:" && ls -la
+
+      # 6. Scrapy Spider ausführen
+      - name: Run scrapy spider
+        env:
+          OUTPUT_CSV: data/results.csv
+          CONCURRENT_REQUESTS: 2
+          SCRAPY_SETTINGS_MODULE: crawler.settings
+        run: |
+          echo "Starting Scrapy spider with Playwright..."
+          cd crawler
+          scrapy crawl webspider -o ../data/results.csv
+          echo "Crawling completed. Results:"
+          [ -f ../data/results.csv ] && wc -l ../data/results.csv || echo "No results file found"
+
+      # 7. Screenshots als Artefakt speichern (optional)
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: crawler-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+
+      # 8. Ergebnisse als Artefakt speichern
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: crawler-results
+          path: |
+            data/results.csv
+          if-no-files-found: error
 
